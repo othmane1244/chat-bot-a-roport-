@@ -1,0 +1,90 @@
+[
+  {
+    "id": "resto_001",
+    "type": "restaurant",
+    "nom": "[EXEMPLE] Café Atlas",
+    "categorie": "café",
+    "zone": "Salle d'embarquement A",
+    "porte_proche": "Porte 8",
+    "etage": "1",
+    "horaires": "05h00 - 23h00",
+    "halal": true,
+    "prix_moyen_mad": 40,
+    "menu": [
+      { "plat": "Café", "prix_mad": 15, "categorie": "boisson" },
+      { "plat": "Croissant", "prix_mad": 12, "categorie": "viennoiserie" },
+      { "plat": "Jus d'orange frais", "prix_mad": 25, "categorie": "boisson" }
+    ],
+    "photos": [],
+    "derniere_mise_a_jour": "2026-08-01",
+    "verifie": false
+  },
+  {
+    "id": "resto_002",
+    "type": "restaurant",
+    "nom": "[EXEMPLE] Tajine House",
+    "categorie": "restaurant",
+    "zone": "Salle d'embarquement B",
+    "porte_proche": "Porte 21",
+    "etage": "1",
+    "horaires": "06h00 - 22h30",
+    "halal": true,
+    "prix_moyen_mad": 90,
+    "menu": [
+      { "plat": "Tajine poulet citron confit", "prix_mad": 95, "categorie": "plat" },
+      { "plat": "Couscous royal", "prix_mad": 110, "categorie": "plat" },
+      { "plat": "Thé à la menthe", "prix_mad": 20, "categorie": "boisson" }
+    ],
+    "photos": [],
+    "derniere_mise_a_jour": "2026-08-01",
+    "verifie": false
+  },
+  {
+    "id": "boutique_001",
+    "type": "boutique",
+    "nom": "[EXEMPLE] Souvenirs du Souss",
+    "categorie": "souvenirs",
+    "zone": "Salle d'embarquement A",
+    "porte_proche": "Porte 5",
+    "etage": "1",
+    "horaires": "05h30 - 23h30",
+    "halal": null,
+    "prix_moyen_mad": null,
+    "menu": [],
+    "photos": [],
+    "derniere_mise_a_jour": "2026-08-01",
+    "verifie": false
+  },
+  {
+    "id": "boutique_002",
+    "type": "boutique",
+    "nom": "[EXEMPLE] Duty Free Agadir",
+    "categorie": "boutique duty-free",
+    "zone": "Zone internationale, après contrôle",
+    "porte_proche": "Portes 15-25",
+    "etage": "1",
+    "horaires": "24h/24 (ouverture liée aux vols)",
+    "halal": null,
+    "prix_moyen_mad": null,
+    "menu": [],
+    "photos": [],
+    "derniere_mise_a_jour": "2026-08-01",
+    "verifie": false
+  },
+  {
+    "id": "boutique_003",
+    "type": "boutique",
+    "nom": "[EXEMPLE] Presse & Lecture",
+    "categorie": "presse",
+    "zone": "Hall principal",
+    "porte_proche": "",
+    "etage": "0",
+    "horaires": "05h00 - 22h00",
+    "halal": null,
+    "prix_moyen_mad": null,
+    "menu": [],
+    "photos": [],
+    "derniere_mise_a_jour": "2026-08-01",
+    "verifie": false
+  }
+]

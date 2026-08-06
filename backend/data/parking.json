@@ -1,0 +1,29 @@
+{
+  "zones": [
+    {
+      "id": "parking_p1",
+      "nom": "[EXEMPLE] Parking P1 - Courte durée",
+      "description": "Parking le plus proche du terminal, dépose-minute et courts séjours",
+      "distance_terminal": "2 min à pied",
+      "tarifs": [
+        { "duree": "30 premières minutes", "prix_mad": 0 },
+        { "duree": "1 heure", "prix_mad": 10 },
+        { "duree": "2 heures", "prix_mad": 20 },
+        { "duree": "Journée (24h)", "prix_mad": 100 }
+      ]
+    },
+    {
+      "id": "parking_p2",
+      "nom": "[EXEMPLE] Parking P2 - Longue durée",
+      "description": "Parking économique pour les séjours de plusieurs jours, navette gratuite vers le terminal",
+      "distance_terminal": "Navette 5 min",
+      "tarifs": [
+        { "duree": "Journée (24h)", "prix_mad": 50 },
+        { "duree": "Semaine (7 jours)", "prix_mad": 280 }
+      ]
+    }
+  ],
+  "source": "[À REMPLACER] Simulateur tarifaire officiel ONDA / appli Maroc Aéroports — à reconfirmer avant mise en production",
+  "derniere_mise_a_jour": "2026-08-01",
+  "verifie": false
+}

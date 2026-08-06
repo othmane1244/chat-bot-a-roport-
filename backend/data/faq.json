@@ -1,0 +1,60 @@
+{
+  "items": [
+    {
+      "id": "faq_wifi",
+      "categorie": "wifi",
+      "question": "Y a-t-il du wifi gratuit à l'aéroport ?",
+      "reponse": "[EXEMPLE] Oui, un réseau wifi gratuit est généralement disponible dans les aéroports marocains. Cherchez un réseau du type 'ONDA_WIFI' ou 'Maroc_Aeroports_WIFI' et suivez la procédure de connexion affichée (souvent un simple clic sur une page d'accueil, sans mot de passe).",
+      "source": "[À VÉRIFIER] onda.ma — à reconfirmer sur place, le nom exact du réseau peut varier",
+      "verified": false
+    },
+    {
+      "id": "faq_bagages_cabine",
+      "categorie": "bagages",
+      "question": "Quelle est la franchise bagage cabine autorisée ?",
+      "reponse": "[EXEMPLE] La franchise bagage cabine dépend de la compagnie aérienne (poids et dimensions variables selon Ryanair, Royal Air Maroc, easyJet, etc.). Vérifie toujours les conditions précises sur le site de ta compagnie avant de voyager.",
+      "source": "[À VÉRIFIER] Site de chaque compagnie aérienne — pas de règle unique",
+      "verified": false
+    },
+    {
+      "id": "faq_documents_voyage",
+      "categorie": "documents_voyage",
+      "question": "Quels documents sont nécessaires pour voyager depuis le Maroc ?",
+      "reponse": "[EXEMPLE] Un passeport valide (souvent avec une validité minimale requise par le pays de destination) est nécessaire pour les vols internationaux. Certaines nationalités doivent aussi obtenir un visa selon leur destination. Toujours vérifier les exigences spécifiques du pays de destination avant le voyage.",
+      "source": "[À VÉRIFIER] Consulats/ambassades des pays de destination, douane.gov.ma",
+      "verified": false
+    },
+    {
+      "id": "faq_douane",
+      "categorie": "douane",
+      "question": "Quelles sont les règles de douane pour entrer/sortir du Maroc ?",
+      "reponse": "[EXEMPLE] Il existe des limites sur les devises, l'alcool et certains produits à l'entrée et à la sortie du territoire marocain. Ces règles évoluent et doivent être vérifiées auprès de la douane marocaine avant le voyage.",
+      "source": "[À VÉRIFIER] douane.gov.ma",
+      "verified": false
+    },
+    {
+      "id": "faq_objets_interdits",
+      "categorie": "objets_interdits",
+      "question": "Quels objets sont interdits en bagage cabine ?",
+      "reponse": "[EXEMPLE] Les liquides au-delà de 100ml (hors exceptions), les objets tranchants, et certains articles de sécurité sont généralement interdits en cabine, conformément aux normes internationales de sûreté aérienne.",
+      "source": "[À VÉRIFIER] Normes IATA / réglementation ONDA",
+      "verified": false
+    },
+    {
+      "id": "faq_contacts",
+      "categorie": "contacts",
+      "question": "Quel est le numéro de contact de l'aéroport ?",
+      "reponse": "[EXEMPLE] Contacte le standard de l'aéroport Agadir Al Massira via les coordonnées publiées sur onda.ma, rubrique 'Nos aéroports > Agadir Al Massira'.",
+      "source": "[À REMPLACER] onda.ma",
+      "verified": false
+    },
+    {
+      "id": "faq_accessibilite",
+      "categorie": "accessibilite",
+      "question": "L'aéroport propose-t-il une assistance PMR (personnes à mobilité réduite) ?",
+      "reponse": "[EXEMPLE] Oui, un service d'assistance PMR existe généralement dans les aéroports gérés par l'ONDA. Il est recommandé de le demander à l'avance auprès de la compagnie aérienne lors de la réservation.",
+      "source": "[À VÉRIFIER] onda.ma, compagnies aériennes",
+      "verified": false
+    }
+  ]
+}
