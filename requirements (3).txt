@@ -1,9 +1,0 @@
-fastapi>=0.115
-uvicorn[standard]>=0.30
-pydantic>=2.8
-pydantic-settings>=2.4
-python-dotenv>=1.0
-
-# Étape 2 : RAG vectoriel
-chromadb>=0.5
-sentence-transformers>=3.0  # nécessaire pour BGE-M3 (télécharge le modèle depuis Hugging Face au 1er lancement)

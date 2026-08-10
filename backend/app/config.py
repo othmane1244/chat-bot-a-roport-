@@ -14,7 +14,13 @@ squelette, prêt à accueillir les clés au fur et à mesure des étapes
 suivantes (connecteurs API, LLM, etc.).
 """
 
+from pathlib import Path
+
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class Settings(BaseSettings):
@@ -35,9 +41,18 @@ class Settings(BaseSettings):
     neo4j_uri: str = "bolt://localhost:7687"
     neo4j_user: str = "neo4j"
     neo4j_password: str = ""
-    chroma_persist_dir: str = "./chroma_data"
+    chroma_persist_dir: str = str(BASE_DIR / "chroma_data")
+    rag_offline_test_mode: bool = False
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    @field_validator("chroma_persist_dir", mode="before")
+    @classmethod
+    def _resolve_chroma_persist_dir(cls, value):
+        path = Path(str(value))
+        if path.is_absolute():
+            return str(path)
+        return str((BASE_DIR / path).resolve())
+
+    model_config = SettingsConfigDict(env_file=str(BASE_DIR / ".env"), extra="ignore")
 
 
 # Instance unique importée partout ailleurs dans le code

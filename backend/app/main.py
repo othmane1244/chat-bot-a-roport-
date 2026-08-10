@@ -11,8 +11,8 @@ même quand il grossira aux étapes 3 à 8.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.app.config import settings
-from backend.app.routers import chat
+from app.config import settings
+from app.routers import chat
 
 app = FastAPI(
     title=settings.app_name,

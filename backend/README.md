@@ -43,6 +43,17 @@ uvicorn app.main:app --reload
 
 Le serveur démarre sur `http://127.0.0.1:8000`.
 
+## Corrections de validation déjà intégrées
+
+Deux ajustements ont été appliqués pendant les tests pour rendre le backend
+plus robuste sur Windows et quel que soit le dossier de lancement :
+
+- `app/config.py` contient maintenant `rag_offline_test_mode`, utilisé par
+  la branche RAG/test quand l'embedder offline est requis.
+- Les chemins `.env` et `chroma_data` sont résolus à partir de l'emplacement
+  de `app/config.py`, pas du répertoire courant, ce qui évite les échecs si
+  `uvicorn` est lancé depuis la racine du workspace plutôt que depuis `backend/`.
+
 ## Tester
 
 **Documentation interactive** (générée automatiquement par FastAPI) :
