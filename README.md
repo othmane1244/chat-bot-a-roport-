@@ -501,3 +501,241 @@ chaque fois qu'un fichier déjà existant est modifié (ex: `config.py`
 a été modifié à l'étape 4 pour ajouter `rag_offline_test_mode`) — sinon
 une désynchronisation peut passer inaperçue jusqu'à un bug en
 apparence random plus tard.
+
+---
+
+## Extension : fusion des collections voyageur (JSON + PDF) dans le RAG
+
+Suite à l'ajout de vrais PDF voyageurs (bagages, douane, documents de
+voyage, e-visa, wifi, check-in) taggés `audience: "voyageur"` via
+`ingest_pdfs.py`, un trou a été repéré : **`rag_query.py`
+n'interrogeait que `aga_knowledge`** (le JSON), jamais `aga_documents`
+(les PDF) — donc les PDF voyageurs, bien qu'indexés, étaient invisibles
+pour `/chat`.
+
+### Corrigé
+
+`query_knowledge()` interroge maintenant **les deux collections** et
+fusionne les résultats triés par distance de similarité (le plus
+pertinent en premier, peu importe qu'il vienne du JSON ou d'un PDF) :
+- `aga_knowledge` : tout, sans filtre.
+- `aga_documents` : **uniquement** les chunks avec
+  `metadata["audience"] == "voyageur"` (filtre Chroma `where=`).
+
+Ce filtre est ce qui garantit qu'un document comme la loi de
+gouvernance interne (testée à l'étape 2, taguée `a_qualifier` /
+`interne_gouvernance`) ne peut **jamais** remonter dans une réponse à
+un voyageur, même si elle finissait par être indexée par erreur.
+
+### Testé
+
+Deux chunks PDF factices insérés (un tagué `voyageur`, un tagué
+`interne_gouvernance`), puis interrogés avec `n_results=20` (quasi
+tous les documents existants) : le chunk voyageur remonte, **le chunk
+interne jamais** — confirme que c'est bien le filtre `where` qui
+bloque, pas la chance du classement (important à vérifier avec
+l'embedder factice, qui classe de façon non fiable). Testé aussi bout
+en bout via `/chat`, fonctionne.
+
+### ⚠️ À vérifier chez toi
+
+1. Confirme la source de tes PDF voyageurs (sites officiels
+   douane.gov.ma / onda.ma / IATA, ou autre) — important pour la
+   fiabilité des réponses sur des sujets sensibles (visa, douane).
+2. Vérifie que `scripts/ingest_pdfs.py --audience voyageur` (ta
+   modification) tague bien chaque chunk correctement avant de
+   considérer cette étape terminée.
+
+---
+
+## Extension : extraction de tableaux PDF (pdfplumber)
+
+Suite à ton retour sur le "Barème des redevances aéroportuaires" (le
+seul PDF ONDA vraiment exploitable, le reste étant soit institutionnel/
+financier soit du contenu HTML dupliqué depuis le site) : `pypdf`
+aplatit les tableaux en texte linéaire, les colonnes se mélangent —
+inutilisable pour un barème tarifaire.
+
+### Corrigé
+
+`app/rag/pdf_loader.py` utilise maintenant **pdfplumber** pour détecter
+et extraire les vrais tableaux (`page.extract_tables()`, colonnes
+préservées), en plus de pypdf pour le texte narratif. Ordre d'essai :
+tableaux → articles (regex) → découpage générique.
+
+**Granularité importante** : chaque **ligne** de tableau devient un
+chunk indexable séparé (pas tout le tableau d'un coup), au format
+auto-descriptif `colonne: valeur | colonne: valeur`. Sans ça, une
+question sur "le tarif stationnement" retrouverait tout le barème
+mélangé plutôt que la ligne pertinente.
+
+### Testé
+
+PDF de test généré avec un vrai tableau (reportlab, 5 lignes tarifaires)
+→ 5 chunks générés, un par ligne, chacun correctement formaté et
+retrouvable indépendamment via `query_knowledge()`. Mécanique confirmée
+fonctionnelle de bout en bout (extraction → chunk → index → fusion avec
+`aga_knowledge` → requête).
+
+⚠️ **Non testé ici** : la pertinence sémantique réelle (embedder
+factice utilisé, sans compréhension du sens) — à valider chez toi avec
+le vrai "Barème des redevances aéroportuaires" et le vrai BGE-M3.
+
+### Pour le contenu HTML (Formalités/Douanes/Bagages)
+
+Décision : **pas de scraper HTML**. C'est du contenu commun à tous les
+aéroports marocains, sujet à changement de mise en page — fragile à
+automatiser pour un gain limité. Copie-colle ce contenu directement
+dans `data/faq.json` (déjà testé, §5.1 du cahier des charges recommande
+la collecte manuelle de toute façon).
+
+### Tester
+
+```bash
+pip install -r requirements.txt   # pdfplumber ajouté
+
+python scripts/ingest_pdfs.py --audience voyageur data/pdfs/bareme.pdf
+```
+
+---
+
+## Extension : premières vraies données voyageur (16 PDF officiels onda.ma)
+
+Suite à un lot de 16 PDF officiels téléchargés depuis onda.ma (section
+"I am a passenger"), premier remplacement concret de placeholders
+`[EXEMPLE]` par de vraies données sourcées.
+
+### Piège repéré avant d'ingérer quoi que ce soit
+
+10 des 16 PDF ("Travel documents #1" à "#10") sont des **captures
+d'une page à accordéon** : à chaque capture, une seule section est
+dépliée, le reste (menu, titres, footer) se répète quasi identique
+dans les 10 fichiers. Passer ça tel quel dans `ingest_pdfs.py`
+(découpage générique) aurait produit des chunks pollués à ~90% de
+texte de navigation dupliqué. **Décision : curation manuelle dans
+`faq.json`** plutôt que d'ingérer ces PDF bruts — je pouvais lire le
+contenu directement, donc pas besoin de code de parsing PDF
+supplémentaire pour ce cas précis.
+
+### Exclu volontairement
+
+`Office National des aéroports -I am a Professional - Usefuls links.pdf`
+— contenu appels d'offres/marchés publics, hors périmètre voyageur. Si
+ce fichier a été ingéré par erreur via `ingest_pdfs.py`, vérifie que
+son `audience` n'est pas `voyageur`.
+
+Contenu "Kids area" (termes aéronautiques, alphabet aviation, comment
+vole un avion) volontairement laissé de côté pour l'instant — utile
+pour une fonctionnalité famille/PMR future (§14), pas prioritaire pour
+le MVP.
+
+### Ajouté à `data/faq.json`
+
+**12 nouvelles entrées réelles**, `verified: true`, chacune avec
+l'URL onda.ma exacte comme source et une date de consultation
+(`consulte_le`) — cohérent avec la règle du §11 ("précise toujours la
+date de mise à jour"). Sujets couverts : passeport vaccinal, e-visa,
+validité passeport, drones/douane, checklist avant embarquement, visa/
+titre de séjour, pièce d'identité, carte d'embarquement, carnet de
+vaccination, billet d'avion, **caractéristiques techniques de
+l'aéroport AGA** (code IATA/OACI, piste), liens réglementaires.
+
+**7 placeholders `[EXEMPLE]` restent** (wifi, bagages cabine, douane
+générale, objets interdits, contacts, accessibilité) — pas encore de
+source réelle pour ces sujets dans ce lot de PDF.
+
+### Testé
+
+26 documents au total dans `aga_knowledge` (14 existants + 12
+nouveaux). Vérifié spécifiquement que l'entrée "caractéristiques
+techniques AGA" est bien indexée avec sa source et `verifie: True` —
+confirmé avec `n_results=26` (tout le corpus), pas de perte silencieuse.
+
+### Reste à collecter pour un MVP vraiment complet
+
+Wifi, franchise bagage cabine précise, douane (devises/alcool), objets
+interdits, contact téléphonique de l'aéroport, PMR — aucune de ces
+infos n'était dans ce lot de PDF, à chercher ailleurs (site ONDA
+section générale, pas "I am passenger", ou contact direct).
+
+---
+
+## Extension : pipeline PDF en lot pour 163 fichiers (déduplication + filtrage tableaux)
+
+Suite au vrai volume du projet (163 PDF, pas 16) : la curation manuelle
+(faq.json) ne scale pas. Reconstruction du pipeline PDF autour de deux
+problèmes réels, découverts sur le lot de 18 PDF déjà fournis.
+
+### Outil d'extraction : Docling évalué, PyMuPDF écarté
+
+Recherche de licences avant tout choix technique :
+- **PyMuPDF** écarté malgré sa vitesse : AGPL-3.0, *"Requires
+  open-sourcing your application if distributed"* (confirmé par
+  recherche web) — mauvais pari pour un projet "académique puis usage
+  réel".
+- **Docling (IBM)** installé et testé : MIT, tourne 100% en local,
+  fait de la vraie analyse de mise en page (contrairement à pypdf qui
+  ne fait qu'un dump de texte linéaire). ⚠️ **Non validable dans ce
+  sandbox** : son modèle de mise en page (`docling-layout-heron`) doit
+  être téléchargé depuis Hugging Face, bloqué ici (même limite que
+  BGE-M3/Gemini/Groq depuis le début du projet). Le code n'utilise
+  donc PAS Docling pour l'instant — **à toi de le tester en local** si
+  tu veux valider l'hypothèse qu'il sépare mieux le menu de navigation
+  du vrai contenu. En attendant, la solution ci-dessous fonctionne
+  avec `pypdf`/`pdfplumber` (déjà en place) et ne dépend pas de Docling.
+
+### Problème 1 : navigation dupliquée à travers les fichiers
+
+Confirmé sur le lot réel : 10 PDF "Travel documents" partagent ~90% de
+texte de menu identique. `app/rag/dedup.py` (nouveau) déduplique au
+niveau LIGNE, **avant** le chunking (un filtrage après chunking est
+cassé par les fenêtres de découpage qui tombent différemment selon
+chaque fichier — testé et confirmé sur les vraies données). Deux
+filtres : motifs (horodatages d'impression, URLs, compteurs de page)
++ fréquence inter-fichiers (une ligne identique dans 40%+ des fichiers
+du lot = boilerplate).
+
+**Résultat mesuré** : 865 → 578 lignes (22% de bruit retiré), 189 → 44
+chunks générés sur le même lot de 18 PDF.
+
+### Problème 2 : faux positifs de détection de tableaux
+
+`extract_tables_from_pdf()` (pdf_loader.py) avait 2 types de faux
+positifs, trouvés sur ce même lot :
+1. Menu latéral à une colonne détecté comme "tableau" → filtré
+   (`min_columns=2`)
+2. Mise en page à 2 colonnes (menu + contenu) détectée comme un
+   "tableau" à une cellule géante contenant tout un pavé de texte →
+   filtré (`max_cell_length=200`, une vraie cellule de données est
+   courte par nature)
+
+**Résultat mesuré** : 45 → 3 "tableaux" détectés sur le lot de 18 PDF
+(les 3 restants : le vrai alphabet aviation, légitime).
+
+### Nouveau script : `scripts/batch_ingest_pdfs.py`
+
+Remplace `ingest_pdfs.py` pour les gros lots (garde `ingest_pdfs.py`
+pour un fichier isolé, plus simple). Toujours lancer en `--dry-run`
+d'abord sur un nouveau lot — affiche le rapport de déduplication SANS
+rien indexer, pour vérifier que ça a du sens avant de committer.
+
+```bash
+python scripts/batch_ingest_pdfs.py --audience voyageur --dry-run data/pdfs/*.pdf
+python scripts/batch_ingest_pdfs.py --audience voyageur data/pdfs/*.pdf
+```
+
+⚠️ **Mon test a taggé tout le lot de 18 PDF `voyageur`, y compris la
+loi 69-00** — c'était juste pour valider la mécanique du script sur un
+volume réaliste, PAS une vraie décision de contenu. Ne fais pas pareil
+sur tes 163 : sépare d'abord les PDF par audience (voyageur vs
+interne), lance le script séparément sur chaque groupe.
+
+### Reste à valider chez toi avant de lancer sur les 163
+
+1. `--dry-run` sur tout le lot, vérifier que le % de lignes retirées
+   est cohérent (trop haut = on retire peut-être du vrai contenu ;
+   trop bas = la dédup ne capture pas assez)
+2. Si tu veux tester Docling (accès Hugging Face requis) : compare sa
+   sortie à ce pipeline sur 2-3 PDF avant de tout re-router dessus
+3. Vérifier qu'aucun PDF "Professional/Tenders" (hors périmètre
+   voyageur) ne se retrouve dans le lot taggé `voyageur`
