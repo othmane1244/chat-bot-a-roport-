@@ -17,7 +17,10 @@ internet est complet — voir le README pour la marche à suivre.
 """
 
 import hashlib
+import logging
 from typing import List, Protocol
+
+logger = logging.getLogger(__name__)
 
 
 class Embedder(Protocol):
@@ -58,13 +61,41 @@ class BGEM3Embedder:
     poids), puis fonctionne hors-ligne (poids mis en cache localement).
     """
 
-    def __init__(self, model_name: str = "BAAI/bge-m3"):
+    def __init__(self, model_name: str = "BAAI/bge-m3", device: str | None = None):
+        import torch
         from sentence_transformers import SentenceTransformer
 
-        self.model = SentenceTransformer(model_name)
+        if device is None:
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+        self._device = device
+        self.model = SentenceTransformer(model_name, device=device)
 
-    def embed(self, texts: List[str]) -> List[List[float]]:
-        return self.model.encode(texts, normalize_embeddings=True).tolist()
+    def embed(self, texts: List[str], batch_size: int = 4) -> List[List[float]]:
+        """Encode texts with automatic CPU fallback on CUDA OOM."""
+        try:
+            return self.model.encode(
+                texts,
+                batch_size=batch_size,
+                normalize_embeddings=True,
+                show_progress_bar=True,
+            ).tolist()
+        except RuntimeError as exc:
+            if "out of memory" in str(exc).lower() and self._device != "cpu":
+                import torch
+                logger.warning(
+                    "CUDA OOM avec batch_size=%d — vidage cache GPU et bascule CPU.",
+                    batch_size,
+                )
+                torch.cuda.empty_cache()
+                self.model = self.model.to("cpu")
+                self._device = "cpu"
+                return self.model.encode(
+                    texts,
+                    batch_size=batch_size,
+                    normalize_embeddings=True,
+                    show_progress_bar=True,
+                ).tolist()
+            raise
 
 
 def get_embedder(offline_test_mode: bool = False) -> Embedder:

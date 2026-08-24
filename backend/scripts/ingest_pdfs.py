@@ -64,13 +64,24 @@ def main(pdf_paths: list[Path], offline_test_mode: bool = False, audience: str =
 
     client = chromadb.PersistentClient(path=settings.chroma_persist_dir)
     collection = client.get_or_create_collection(COLLECTION_NAME)
-    collection.upsert(
-        ids=[d["id"] for d in all_docs],
-        embeddings=vectors,
-        documents=[d["text"] for d in all_docs],
-        metadatas=[d["metadata"] for d in all_docs],
-    )
-    print(f"-> {len(all_docs)} chunks indexés dans la collection '{COLLECTION_NAME}'.")
+
+    batch_size = 1000
+    total_docs = len(all_docs)
+    ids = [d["id"] for d in all_docs]
+    documents = [d["text"] for d in all_docs]
+    metadatas = [d["metadata"] for d in all_docs]
+
+    print(f"-> Indexation de {total_docs} chunks par lots de {batch_size} dans ChromaDB...")
+    for i in range(0, total_docs, batch_size):
+        end = i + batch_size
+        collection.upsert(
+            ids=ids[i:end],
+            embeddings=vectors[i:end],
+            documents=documents[i:end],
+            metadatas=metadatas[i:end],
+        )
+
+    print(f"-> {total_docs} chunks indexés dans la collection '{COLLECTION_NAME}'.")
     print(f"-> Total actuel dans cette collection : {collection.count()}.")
     print()
     print("Rappel : va vérifier le champ metadata['audience'] de chaque document")

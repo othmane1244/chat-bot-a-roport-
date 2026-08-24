@@ -14,7 +14,7 @@ import chromadb
 from app.config import settings
 from app.rag.embeddings import get_embedder
 
-COLLECTION_NAME = "aga_knowledge"
+COLLECTION_NAME = "aga_documents"
 
 
 def query_knowledge(

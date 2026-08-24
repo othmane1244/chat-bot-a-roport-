@@ -37,12 +37,14 @@ IN_SCOPE_KEYWORDS = [
     "embarquement", "passeport", "visa", "taxi", "bus", "navette", "terminal",
     "arrivée", "arrivee", "départ", "depart", "check-in", "enregistrement",
     "correspondance", "onda", "agadir", "aga", "duty free", "duty-free",
+    "cip", "salon", "salons", "service", "services", "tarif", "tarifs",
+    "horaire", "horaires", "contact", "fret", "accès", "acces", "marché", "marches",
     # Anglais
     "flight", "airport", "luggage", "baggage", "customs", "gate", "boarding",
-    "passport", "shuttle",
+    "passport", "shuttle", "lounge", "lounges", "fee", "fees", "schedule", "schedules",
     # Arabe (formes courantes)
     "طيران", "رحلة", "مطار", "حقيبة", "أمتعة", "جمارك", "بوابة", "جواز",
-    "تأشيرة", "حافلة", "أكادير",
+    "تأشيرة", "حافلة", "أكادير", "صالون", "خدمة", "خدمات", "موقف", "أسعار",
 ]
 
 

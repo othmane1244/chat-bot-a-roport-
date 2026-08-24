@@ -36,6 +36,9 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     groq_api_key: str = ""
 
+    # --- OCR Mistral (extraction texte PDF image/scan) ---
+    mistral_api_key: str = ""
+
     # --- Ces adresses seront utilisées à partir des étapes 3-4 (cache, RAG) ---
     redis_url: str = "redis://localhost:6379/0"
     neo4j_uri: str = "bolt://localhost:7687"
