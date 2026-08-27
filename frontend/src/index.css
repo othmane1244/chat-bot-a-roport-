@@ -1,0 +1,847 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: #071522;
+  color: white;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* BACKGROUND & ATMOSPHERE */
+.airport-background {
+  position: fixed;
+  inset: 0;
+  background: url("https://images.unsplash.com/photo-1542296332-2e4473faf563?q=80&w=2000&auto=format&fit=crop") center / cover no-repeat;
+  z-index: -3;
+}
+
+.background-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 21, 34, 0.78);
+  z-index: -2;
+}
+
+.background-gradient {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(7, 21, 34, 0.3) 0%,
+    rgba(7, 21, 34, 0.85) 50%,
+    #071522 95%
+  );
+  z-index: -1;
+}
+
+.content {
+  width: min(1400px, 94%);
+  margin: auto;
+  padding-bottom: 80px;
+}
+
+/* HEADER */
+.airport-header {
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.logo-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.navigation {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-item {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 8px 18px;
+  border-radius: 16px;
+  transition: 0.2s;
+}
+
+.nav-item.active,
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.temperature-pill {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.languages {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 8px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+}
+
+.lang-option {
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.6);
+  transition: 0.2s;
+  user-select: none;
+}
+
+.lang-option.active,
+.lang-option:hover {
+  color: white;
+  font-weight: 700;
+}
+
+.lang-sep {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* GLASS CARD */
+.glass-card {
+  background: rgba(10, 20, 30, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+/* HERO DASHBOARD SECTION */
+.hero-dashboard-section {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 40px 0 50px;
+}
+
+.hero-left-content {
+  flex: 1;
+  max-width: 850px;
+}
+
+.airport-tag {
+  color: #1e88e5;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+
+.hero-greeting {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 6px 0 2px 0;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.hero-main-title {
+  font-size: clamp(36px, 4.5vw, 54px);
+  font-weight: 800;
+  margin: 0 0 24px 0;
+  line-height: 1.15;
+}
+
+/* QUICK ACTIONS BAR */
+.quick-actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.quick-action-pill {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.07);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.quick-action-pill:hover {
+  background: rgba(30, 136, 229, 0.25);
+  border-color: rgba(30, 136, 229, 0.5);
+  transform: translateY(-2px);
+}
+
+/* HERO SEARCH BAR */
+.hero-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(10, 20, 30, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 6px 8px 6px 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.hero-search-bar input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  color: white;
+  font-size: 16px;
+}
+
+.hero-search-bar input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.hero-send-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+  color: white;
+  font-size: 16px;
+  display: grid;
+  place-items: center;
+  transition: 0.2s;
+  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
+}
+
+.hero-send-btn:hover {
+  transform: scale(1.05);
+}
+
+/* WEATHER WIDGET HERO (RIGHT) */
+.hero-right-widget {
+  width: 320px;
+  flex-shrink: 0;
+}
+
+.weather-card-hero {
+  padding: 22px;
+}
+
+.weather-hero-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.weather-hero-icon {
+  font-size: 42px;
+}
+
+.weather-hero-temp {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.weather-hero-cond {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4px;
+}
+
+.weather-hero-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+}
+
+.weather-row {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.weather-row strong {
+  color: white;
+}
+
+.weather-hero-location {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* THREE COLUMN DASHBOARD GRID */
+.dashboard-3col-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 10px;
+}
+
+.dashboard-card {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+}
+
+.card-header-bar {
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 16px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.card-subtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  display: block;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-items-center {
+  display: flex;
+  align-items: center;
+}
+
+.gap-2 {
+  gap: 8px;
+}
+
+/* COLUMN 1: AI ASSISTANT */
+.chat-messages-container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 330px;
+  padding-right: 4px;
+}
+
+.chat-msg-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.msg-user-row {
+  justify-content: flex-end;
+}
+
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.bot-avatar {
+  background: rgba(30, 136, 229, 0.25);
+  border: 1px solid rgba(30, 136, 229, 0.5);
+}
+
+.user-avatar {
+  background: #1e88e5;
+}
+
+.msg-bubble {
+  max-width: 82%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  position: relative;
+}
+
+.msg-user-row .msg-bubble {
+  background: #1e88e5;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.msg-assistant-row .msg-bubble {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom-left-radius: 4px;
+}
+
+.msg-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: white;
+}
+
+.msg-body {
+  white-space: pre-line;
+}
+
+.msg-sources {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #60a5fa;
+}
+
+.msg-timestamp {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: right;
+  margin-top: 4px;
+}
+
+.suggestion-pills-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 10px 0 6px;
+}
+
+.sug-pill {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.sug-pill:hover {
+  background: rgba(30, 136, 229, 0.25);
+  color: white;
+}
+
+.chat-bottom-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.attach-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+  padding: 4px;
+}
+
+.chat-bottom-input input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 10px 14px;
+  color: white;
+  font-size: 13px;
+  outline: none;
+}
+
+.send-circle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #1e88e5;
+  color: white;
+  border: none;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+}
+
+/* TYPING DOTS */
+.typing-dots {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.typing-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1e88e5;
+  animation: typingDot 1s infinite;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingDot {
+  50% { opacity: 0.3; transform: translateY(-3px); }
+}
+
+/* COLUMN 2: YOUR FLIGHT */
+.badge-demo-data {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.flight-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 1;
+}
+
+.flight-main-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.flight-plane-icon {
+  font-size: 20px;
+  background: rgba(30, 136, 229, 0.2);
+  padding: 8px 12px;
+  border-radius: 12px;
+
+}
+
+.flight-number-title {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.flight-airline-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.flight-route-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.city-name {
+  font-size: 16px;
+  display: block;
+}
+
+.city-iata {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: monospace;
+}
+
+.route-arrow-line {
+  flex: 1;
+  margin: 0 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow-line-track {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(30,136,229,0.1), #1e88e5, rgba(30,136,229,0.1));
+}
+
+.plane-on-track {
+  position: absolute;
+  color: #1e88e5;
+  font-size: 14px;
+}
+
+.flight-meta-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.meta-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.meta-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.meta-val {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.status-pill-green {
+  color: #22c55e;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.flight-gates-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.gate-item-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  display: block;
+}
+
+.gate-item-val {
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.green-demo-pill {
+  font-size: 9px;
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.flight-sim-note {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: auto;
+}
+
+/* COLUMN 3: LIVE DEPARTURES */
+.departures-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.live-timestamp {
+  font-size: 12px;
+  text-align: right;
+  line-height: 1.2;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.live-indicator-pill {
+  color: #22c55e;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.departures-table-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.departures-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.departures-table th {
+  text-align: left;
+  padding: 8px 4px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 11px;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.departures-table td {
+  padding: 12px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.status-badge-table {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge-table.boarding {
+  color: #22c55e;
+}
+
+.status-badge-table.delayed {
+  color: #f59e0b;
+}
+
+.status-badge-table.ontime {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.avionio-footer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.avionio-brand {
+  color: #3b82f6;
+}
+
+.open-iframe-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+}
+
+.iframe-container-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.iframe-top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.close-iframe-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.avionio-frame {
+  width: 100%;
+  height: 380px;
+  border: none;
+  border-radius: 12px;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1100px) {
+  .dashboard-3col-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-dashboard-section {
+    flex-direction: column;
+  }
+
+  .hero-right-widget {
+    width: 100%;
+  }
+
+  .airport-header {
+    height: auto;
+    padding: 16px 0;
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+  }
+}
