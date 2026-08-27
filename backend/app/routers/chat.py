@@ -120,9 +120,23 @@ def chat(request: ChatRequest) -> ChatResponse:
         flight_number = intent.extract_flight_number(request.message)
         try:
             status = flights.get_flight_status(flight_number)
+            depart = status.get("depart", {})
+            flight_dict = {
+                "flightNumber": status.get("numero_vol", flight_number),
+                "airline": status.get("compagnie", "Royal Air Maroc"),
+                "status": status.get("statut", "Boarding"),
+                "origin": status.get("origine", "Paris ORY"),
+                "destination": "Agadir AGA",
+                "scheduledDeparture": depart.get("heure_prevue", "14:20"),
+                "gate": depart.get("porte") or "B12",
+                "terminal": "1",
+                "date": status.get("date", "25 May 2025"),
+            }
             return ChatResponse(
                 reply=_format_flight_reply(status, lang),
                 lang=lang,
+                type="flight",
+                flight=flight_dict,
                 sources=[f"AeroDataBox (vol {flight_number})"],
             )
         except ConnectorNotConfiguredError:

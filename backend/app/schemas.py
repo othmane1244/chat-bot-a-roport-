@@ -31,7 +31,7 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     reply: str
     lang: str
-    # Vide pour l'instant — sera rempli à partir de l'étape 4/5 avec les
-    # documents/sources réellement utilisés pour construire la réponse
-    # (traçabilité anti-hallucination, voir §11 du cahier des charges).
+    type: str = "text"
+    flight: Optional[dict] = None
     sources: list[str] = []
+

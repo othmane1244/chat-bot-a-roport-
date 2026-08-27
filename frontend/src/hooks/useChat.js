@@ -5,55 +5,51 @@ export function useChat() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const send = async (message, lang = "fr") => {
-    if (!message?.trim() || loading) return;
+  const send = async (text, lang = "fr") => {
+    if (!text?.trim() || loading) return null;
 
     const userMessage = {
       id: crypto.randomUUID(),
       role: "user",
-      content: message,
+      type: "text",
+      content: text,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    setMessages((previous) => [
-      ...previous,
-      userMessage,
-    ]);
-
+    setMessages((previous) => [...previous, userMessage]);
     setLoading(true);
 
     try {
-      const response = await sendMessage(message, lang);
+      const response = await sendMessage(text, lang);
 
       const assistantMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-
+        type: response.type || "text",
         content:
           response.reply ||
           response.answer ||
           response.message ||
-          response.response ||
-          "I couldn't find an answer.",
-
+          "Sorry, I couldn't find an answer.",
         sources: response.sources || [],
+        flight: response.flight || null,
         data: response,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
 
-      setMessages((previous) => [
-        ...previous,
-        assistantMessage,
-      ]);
+      setMessages((previous) => [...previous, assistantMessage]);
+      return response;
     } catch (error) {
-      setMessages((previous) => [
-        ...previous,
-        {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          type: "error",
-          content:
-            "Unable to reach the airport assistant. Please make sure the backend server is running.",
-        },
-      ]);
+      const errorMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        type: "error",
+        content: "Unable to contact the airport assistant. Please try again.",
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+
+      setMessages((previous) => [...previous, errorMessage]);
+      return null;
     } finally {
       setLoading(false);
     }
