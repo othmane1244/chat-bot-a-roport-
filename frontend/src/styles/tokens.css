@@ -1,0 +1,60 @@
+:root {
+  /* =========================
+     COLORS
+  ========================= */
+
+  --color-primary: #38bdf8;
+  --color-primary-hover: #0ea5e9;
+
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  --color-background: #07111f;
+
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.68);
+  --text-muted: rgba(255, 255, 255, 0.45);
+
+  /* =========================
+     GLASS SYSTEM
+  ========================= */
+
+  --glass-bg: rgba(8, 18, 30, 0.58);
+  --glass-bg-strong: rgba(8, 18, 30, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-hover: rgba(255, 255, 255, 0.22);
+
+  /* =========================
+     BORDER RADIUS
+  ========================= */
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  /* =========================
+     SHADOWS
+  ========================= */
+
+  --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 18px 45px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 30px 80px rgba(0, 0, 0, 0.38);
+
+  /* =========================
+     TRANSITIONS
+  ========================= */
+
+  --transition-fast: 180ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 600ms ease;
+
+  /* =========================
+     LAYOUT
+  ========================= */
+
+  --container-width: 1200px;
+  --header-height: 76px;
+}

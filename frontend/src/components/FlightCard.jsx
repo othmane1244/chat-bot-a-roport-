@@ -1,108 +1,130 @@
 import GlassCard from "./GlassCard";
-import { getOperationalData } from "../data/simulatedOperationalData";
+import { useOperationalData } from "../hooks/useOperationalData";
+
+function getStatusClass(status = "") {
+  const value = String(status).toLowerCase();
+
+  if (value.includes("board")) {
+    return "status-boarding";
+  }
+
+  if (value.includes("delay")) {
+    return "status-delayed";
+  }
+
+  if (value.includes("cancel")) {
+    return "status-cancelled";
+  }
+
+  return "status-normal";
+}
 
 export default function FlightCard({ flight }) {
-  let flightObj = null;
+  const flightNumber = flight?.number || flight?.flightNumber || "AT5432";
+  const operational = useOperationalData(flightNumber);
 
-  if (typeof flight === "object" && flight !== null) {
-    flightObj = flight;
-  } else if (typeof flight === "string") {
-    flightObj = getOperationalData(flight);
-  }
+  const currentFlight = flight || {
+    number: "AT5432",
+    airline: "Royal Air Maroc",
+    status: "Boarding",
+    departure: {
+      airport: "Paris Orly",
+      iata: "ORY",
+      scheduled: "14:20",
+    },
+    arrival: {
+      airport: "Agadir Al Massira",
+      iata: "AGA",
+    },
+  };
 
-  if (!flightObj) {
-    flightObj = getOperationalData("AT5432") || {
-      flightNumber: "AT5432",
-      airline: "Royal Air Maroc",
-      origin: "Paris ORY",
-      destination: "Agadir AGA",
-      scheduledDeparture: "14:20",
-      status: "Boarding",
-      date: "25 May 2025",
-      gate: "B12",
-      terminal: "1",
-      boardingZone: "B",
-    };
-  }
-
-  const flightNum = flightObj.flightNumber || flightObj.number || "AT5432";
-  const airline = flightObj.airline || "Royal Air Maroc";
-  const origin = flightObj.origin || flightObj.departure?.airport || "Paris ORY";
-  const destination = flightObj.destination || "Agadir AGA";
-  const scheduled = flightObj.scheduledDeparture || flightObj.departure?.scheduled || "14:20";
-  const status = flightObj.status || "Boarding";
-  const date = flightObj.date || "25 May 2025";
-  const gate = flightObj.gate || "B12";
-  const terminal = flightObj.terminal || "1";
+  const departure = currentFlight.departure || {};
+  const arrival = currentFlight.arrival || {};
 
   return (
-    <GlassCard className="dashboard-card col-flight">
-      <div className="card-header-bar flex-between">
-        <h3 className="card-title font-bold">YOUR FLIGHT</h3>
-        <span className="badge-demo-data">DEMO DATA</span>
+    <GlassCard className="dashboard-card col-flight flight-card">
+      {/* HEADER */}
+      <div className="flight-card-header">
+        <div>
+          <span className="flight-label">YOUR FLIGHT</span>
+          <h2>✈ {currentFlight.number || flightNumber}</h2>
+          <p>{currentFlight.airline || "Airline unavailable"}</p>
+        </div>
+
+        {operational && (
+          <span className="demo-badge">DEMO DATA</span>
+        )}
       </div>
 
-      <div className="flight-card-body">
-        <div className="flight-main-header">
-          <span className="flight-plane-icon">✈</span>
-          <div>
-            <div className="flight-number-title">{flightNum}</div>
-            <div className="flight-airline-sub">{airline}</div>
-          </div>
+      {/* ROUTE */}
+      <div className="flight-route">
+        <div className="airport-point">
+          <strong>{departure.iata || "ORY"}</strong>
+          <span>{departure.airport || "Paris Orly"}</span>
         </div>
 
-        <div className="flight-route-display">
-          <div className="route-city">
-            <span className="city-name font-bold">{origin.split(" ")[0]}</span>
-            <span className="city-iata">{origin.split(" ")[1] || ""}</span>
-          </div>
-
-          <div className="route-arrow-line">
-            <div className="arrow-line-track" />
-            <span className="plane-on-track">✈</span>
-          </div>
-
-          <div className="route-city text-right">
-            <span className="city-name font-bold">{destination.split(" ")[0]}</span>
-            <span className="city-iata">{destination.split(" ")[1] || "AGA"}</span>
-          </div>
+        <div className="route-line">
+          <span>✈</span>
         </div>
 
-        <div className="flight-meta-row">
-          <div className="meta-col">
-            <span className="meta-label">Departure</span>
-            <span className="meta-val">{scheduled}</span>
-          </div>
-          <div className="meta-col">
-            <span className="meta-label">Status</span>
-            <span className="status-pill-green">● {status}</span>
-          </div>
-          <div className="meta-col">
-            <span className="meta-label">Date</span>
-            <span className="meta-val">{date}</span>
-          </div>
-        </div>
-
-        <div className="flight-gates-box">
-          <div className="gate-item">
-            <span className="gate-item-label">Gate</span>
-            <div className="gate-item-val">
-              {gate} <span className="green-demo-pill">DEMO</span>
-            </div>
-          </div>
-
-          <div className="gate-item">
-            <span className="gate-item-label">Terminal</span>
-            <div className="gate-item-val">
-              {terminal} <span className="green-demo-pill">DEMO</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flight-sim-note">
-          Gate and terminal information are simulated.
+        <div className="airport-point">
+          <strong>{arrival.iata || "AGA"}</strong>
+          <span>{arrival.airport || "Agadir Al Massira"}</span>
         </div>
       </div>
+
+      {/* REAL FLIGHT DATA */}
+      <div className="flight-details">
+        <div>
+          <span>Departure</span>
+          <strong>
+            {departure.revised || departure.scheduled || "--:--"}
+          </strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong className={getStatusClass(currentFlight.status)}>
+            ● {currentFlight.status || "Unknown"}
+          </strong>
+        </div>
+      </div>
+
+      {/* SIMULATED DATA */}
+      {operational && (
+        <div className="operational-section">
+          <div className="operational-title">
+            <span>Operational information</span>
+            <small>SIMULATED</small>
+          </div>
+
+          <div className="operational-grid">
+            <div>
+              <span>Gate</span>
+              <strong>{operational.gate}</strong>
+            </div>
+
+            <div>
+              <span>Terminal</span>
+              <strong>{operational.terminal}</strong>
+            </div>
+
+            {operational.boardingZone && (
+              <div>
+                <span>Boarding zone</span>
+                <strong>{operational.boardingZone}</strong>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TRANSPARENCY */}
+      {operational && (
+        <p className="simulation-note">
+          Gate and terminal information are simulated for demonstration.
+        </p>
+      )}
     </GlassCard>
   );
 }

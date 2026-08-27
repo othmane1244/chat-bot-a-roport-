@@ -51,7 +51,7 @@ export default function ChatAssistant({
     <GlassCard className="dashboard-card col-assistant" id="assistant">
       <div className="card-header-bar flex-between">
         <div className="assistant-title flex-items-center gap-2">
-          <div className="assistant-icon">✈</div>
+          <div className="assistant-avatar">✈</div>
           <div>
             <h3 className="card-title">AI AIRPORT ASSISTANT</h3>
             <span className="online-status">● Online</span>
@@ -68,10 +68,13 @@ export default function ChatAssistant({
         ))}
 
         {loading && (
-          <div className="typing-dots">
-            <span />
-            <span />
-            <span />
+          <div className="typing-wrapper">
+            <div className="assistant-avatar">✈</div>
+            <div className="typing-indicator">
+              <span />
+              <span />
+              <span />
+            </div>
           </div>
         )}
 

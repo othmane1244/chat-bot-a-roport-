@@ -1,44 +1,39 @@
 const actions = [
   {
     icon: "✈️",
-    label: "Flight information",
-    prompt: "I want information about my flight.",
+    label: "Check my flight",
+    prompt: "Check my flight status",
   },
   {
-    icon: "🧳",
-    label: "Baggage services",
-    prompt: "What should I do if my baggage is lost?",
+    icon: "🛄",
+    label: "Baggage",
+    prompt: "Where can I find baggage information?",
   },
   {
-    icon: "🛂",
-    label: "Travel documents",
-    prompt: "What travel documents do I need?",
+    icon: "🚕",
+    label: "Transport",
+    prompt: "How can I get transportation from the airport?",
   },
   {
-    icon: "🚌",
-    label: "Transport & Parking",
-    prompt: "Where can I find airport parking and transport?",
-  },
-  {
-    icon: "🏪",
-    label: "Airport facilities",
-    prompt: "What services and facilities are available at the airport?",
+    icon: "🅿️",
+    label: "Parking",
+    prompt: "Tell me about airport parking",
   },
 ];
 
 export default function QuickActions({ onAction }) {
   return (
-    <div className="quick-actions-bar">
+    <section className="quick-actions">
       {actions.map((action) => (
         <button
           key={action.label}
-          className="quick-action-pill"
+          className="quick-action glass-card glass-card-hover"
           onClick={() => onAction && onAction(action.prompt)}
         >
-          <span className="action-icon">{action.icon}</span>
-          <span className="action-label">{action.label}</span>
+          <span className="quick-action-icon">{action.icon}</span>
+          <span>{action.label}</span>
         </button>
       ))}
-    </div>
+    </section>
   );
 }

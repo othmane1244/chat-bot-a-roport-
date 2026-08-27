@@ -1,0 +1,4 @@
+export const APP_CONFIG = {
+  DEMO_MODE: true,
+  SIMULATION_REFRESH_MINUTES: 30,
+};

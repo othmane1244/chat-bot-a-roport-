@@ -1,41 +1,64 @@
-import { useState, useEffect } from "react";
-import { fetchAgadirWeather } from "../services/weatherService";
+import { useEffect, useState } from "react";
+import { getWeather } from "../services/weatherService";
+import { resolveWeather } from "../utils/weatherResolver";
 
 export function useWeather() {
-  const [weather, setWeather] = useState({
-    temp: 24,
-    condition: "Sunny",
-    humidity: "45%",
-    wind: "18 km/h",
-    visibility: "10 km",
-    location: "Agadir, Morocco",
-  });
+  const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    let mounted = true;
-    fetchAgadirWeather()
-      .then((data) => {
-        if (mounted && data) {
-          setWeather(data);
+    let isMounted = true;
+
+    async function loadWeather() {
+      try {
+        setLoading(true);
+        const rawWeather = await getWeather();
+        const resolvedWeather = resolveWeather(
+          rawWeather.weatherCode,
+          rawWeather.isDay
+        );
+
+        if (!isMounted) return;
+
+        setWeather({
+          ...rawWeather,
+          ...resolvedWeather,
+        });
+
+        setError(null);
+      } catch (err) {
+        if (!isMounted) return;
+        setError(err);
+        setWeather({
+          temperature: 24,
+          weatherCode: 0,
+          isDay: true,
+          condition: "Sunny",
+          icon: "☀️",
+          atmosphere: "sunny",
+        });
+      } finally {
+        if (isMounted) {
+          setLoading(false);
         }
-      })
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
+      }
+    }
+
+    loadWeather();
+
+    // Refresh every 15 minutes
+    const interval = setInterval(loadWeather, 15 * 60 * 1000);
 
     return () => {
-      mounted = false;
+      isMounted = false;
+      clearInterval(interval);
     };
   }, []);
-
-  const setCondition = (condition) => {
-    setWeather((prev) => ({ ...prev, condition }));
-  };
 
   return {
     weather,
     loading,
-    setCondition,
+    error,
   };
 }

@@ -2,156 +2,100 @@ import { useState } from "react";
 
 import AirportHeader from "../components/AirportHeader";
 import AirportBackground from "../components/AirportBackground";
-
+import WeatherWidget from "../components/WeatherWidget";
 import ChatAssistant from "../components/ChatAssistant";
 import QuickActions from "../components/QuickActions";
-
 import FlightCard from "../components/FlightCard";
 import DeparturesBoard from "../components/DeparturesBoard";
 
-import WeatherWidget from "../components/WeatherWidget";
-
 import { useChat } from "../hooks/useChat";
 import { useWeather } from "../hooks/useWeather";
-import { getOperationalData } from "../data/simulatedOperationalData";
 
 export default function Home() {
   const [heroInput, setHeroInput] = useState("");
   const [currentLang, setLang] = useState("fr");
   const [selectedFlight, setSelectedFlight] = useState(null);
 
-  const { weather } = useWeather();
+  const { messages, loading: chatLoading, send } = useChat();
+  const { weather, loading: weatherLoading } = useWeather();
 
-  // ✅ UNE SEULE INSTANCE DU CHAT POUR TOUT L'APP
-  const {
-    messages,
-    loading,
-    send,
-  } = useChat();
-
-  const handleSend = async (messageText) => {
-    if (!messageText?.trim() || loading) return;
-
-    const response = await send(messageText, currentLang);
-
-    // Détection automatique de vol dans la réponse backend ou le message
+  const handleSend = async (message) => {
+    const response = await send(message, currentLang);
     if (response?.flight) {
       setSelectedFlight(response.flight);
-    } else {
-      const match = messageText.match(/\b([A-Z]{2,3}\s*\d{2,4})\b/i);
-      if (match) {
-        const flightNum = match[1].replace(/\s+/, "").toUpperCase();
-        const flightData = getOperationalData(flightNum);
-        if (flightData) {
-          setSelectedFlight(flightData);
-        }
-      }
     }
-
     return response;
   };
 
   const handleHeroSubmit = async (event) => {
     event.preventDefault();
-
     if (!heroInput.trim()) return;
 
     await handleSend(heroInput);
-
     setHeroInput("");
 
-    // Scroll automatique vers le chat
-    document
-      .getElementById("assistant")
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-  };
-
-  const handleQuickAction = async (prompt) => {
-    await handleSend(prompt);
-
-    // Scroll automatique vers le chat
-    document
-      .getElementById("assistant")
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+    document.getElementById("assistant")?.scrollIntoView({
+      behavior: "smooth",
+    });
   };
 
   return (
     <main className="app">
-      <AirportBackground />
+      <AirportBackground atmosphere={weather?.atmosphere || "sunny"} />
 
       <div className="content">
-        <AirportHeader 
-          temp={weather?.temp} 
-          currentLang={currentLang} 
-          onSelectLang={setLang} 
+        <AirportHeader
+          temp={weather?.temperature}
+          currentLang={currentLang}
+          onSelectLang={setLang}
         />
 
         {/* HERO */}
-        <section className="hero-dashboard-section">
-          <div className="hero-left-content">
-            <span className="airport-tag">
+        <section className="hero-dashboard-section hero-section">
+          <div className="hero-left-content hero-content">
+            <span className="airport-tag airport-label animate-fade-up">
               AGA AIRPORT
             </span>
 
-            <h1 className="hero-greeting">
+            <h1 className="hero-greeting hero-title">
               Your Digital Airport Assistant
             </h1>
 
-            <h2 className="hero-main-title">
-              Ask anything about Agadir Al Massira Airport.
-            </h2>
+            <p className="hero-main-title hero-description">
+              Everything you need for your journey at Agadir Al Massira Airport.
+            </p>
 
-            {/* HERO INPUT */}
-            <form
-              className="hero-search-bar"
-              onSubmit={handleHeroSubmit}
-            >
+            <form className="hero-search-bar hero-search" onSubmit={handleHeroSubmit}>
               <input
                 value={heroInput}
-                onChange={(event) =>
-                  setHeroInput(event.target.value)
-                }
+                onChange={(event) => setHeroInput(event.target.value)}
                 placeholder="How can I help you today?"
-                disabled={loading}
+                disabled={chatLoading}
               />
 
-              <button
-                type="submit"
-                className="hero-send-btn"
-                disabled={loading}
-              >
-                {loading ? "..." : "→"}
+              <button type="submit" className="hero-send-btn" disabled={chatLoading}>
+                {chatLoading ? "..." : "➜"}
               </button>
             </form>
           </div>
 
           <div className="hero-right-widget">
-            <WeatherWidget weather={weather} />
+            <WeatherWidget weather={weather} loading={weatherLoading} />
           </div>
         </section>
 
         {/* QUICK ACTIONS */}
-        <QuickActions
-          onAction={handleQuickAction}
-        />
+        <QuickActions onAction={handleSend} />
 
         {/* DASHBOARD GRID: CHAT, FLIGHT CARD, LIVE DEPARTURES */}
         <section className="dashboard-3col-grid" id="assistant">
           <ChatAssistant
             messages={messages}
-            loading={loading}
+            loading={chatLoading}
             onSend={handleSend}
           />
 
-          <FlightCard
-            flight={selectedFlight}
-          />
+          <FlightCard flight={selectedFlight} />
 
           <DeparturesBoard />
         </section>

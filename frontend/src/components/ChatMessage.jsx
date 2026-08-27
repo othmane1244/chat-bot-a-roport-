@@ -2,7 +2,11 @@ export default function ChatMessage({ message }) {
   const isUser = message.role === "user";
 
   return (
-    <div className={`chat-msg-row ${isUser ? "msg-user-row" : "msg-assistant-row"}`}>
+    <div
+      className={`chat-msg-row ${
+        isUser ? "msg-user-row" : "msg-assistant-row"
+      } animate-message`}
+    >
       {!isUser && (
         <div className="avatar-circle bot-avatar">
           🤖
@@ -15,7 +19,8 @@ export default function ChatMessage({ message }) {
 
         {message.sources && message.sources.length > 0 && (
           <div className="msg-sources">
-            <span>Sources: </span>{message.sources.join(", ")}
+            <span>Sources: </span>
+            {message.sources.join(", ")}
           </div>
         )}
 

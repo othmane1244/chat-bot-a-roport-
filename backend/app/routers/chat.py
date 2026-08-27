@@ -23,6 +23,7 @@ texte informatif) et jamais là où il pourrait introduire un risque
 from fastapi import APIRouter
 
 from app.connectors import flights
+from app.connectors.flight_adapter import normalize_flight_data
 from app.connectors.flights import ConnectorAPIError, ConnectorNotConfiguredError
 from app.llm.orchestrator import AllProvidersFailedError, generate_reply
 from app.routers import intent
@@ -119,48 +120,37 @@ def chat(request: ChatRequest) -> ChatResponse:
     if detected_intent == intent.Intent.FLIGHT_STATUS:
         flight_number = intent.extract_flight_number(request.message)
         try:
-            status = flights.get_flight_status(flight_number)
-            depart = status.get("depart", {})
-            flight_dict = {
-                "flightNumber": status.get("numero_vol", flight_number),
-                "airline": status.get("compagnie", "Royal Air Maroc"),
-                "status": status.get("statut", "Boarding"),
-                "origin": status.get("origine", "Paris ORY"),
-                "destination": "Agadir AGA",
-                "scheduledDeparture": depart.get("heure_prevue", "14:20"),
-                "gate": depart.get("porte") or "B12",
-                "terminal": "1",
-                "date": status.get("date", "25 May 2025"),
-            }
+            raw_status = flights.get_flight_status(flight_number)
+            flight_data = normalize_flight_data(raw_status)
             return ChatResponse(
-                reply=_format_flight_reply(status, lang),
-                lang=lang,
                 type="flight",
-                flight=flight_dict,
+                reply=_format_flight_reply(raw_status, lang),
+                lang=lang,
+                flight=flight_data,
                 sources=[f"AeroDataBox (vol {flight_number})"],
             )
         except ConnectorNotConfiguredError:
-            return ChatResponse(reply=_not_configured_reply(lang), lang=lang, sources=[])
+            return ChatResponse(type="text", reply=_not_configured_reply(lang), lang=lang, sources=[])
         except ConnectorAPIError:
             return ChatResponse(
-                reply=_flight_not_found_reply(flight_number, lang), lang=lang, sources=[]
+                type="text", reply=_flight_not_found_reply(flight_number, lang), lang=lang, sources=[]
             )
 
     if detected_intent == intent.Intent.OUT_OF_SCOPE:
-        return ChatResponse(reply=intent.out_of_scope_reply(lang), lang=lang, sources=[])
+        return ChatResponse(type="text", reply=intent.out_of_scope_reply(lang), lang=lang, sources=[])
 
     # DOCUMENTARY
     chunks = query_knowledge(request.message, n_results=3)
     if not chunks:
-        return ChatResponse(reply=_no_documentary_result_reply(lang), lang=lang, sources=[])
+        return ChatResponse(type="text", reply=_no_documentary_result_reply(lang), lang=lang, sources=[])
 
     sources = [c["metadata"].get("type", "inconnu") for c in chunks]
     context = _build_rag_context(chunks)
 
     try:
         reply_text, engine_used = generate_reply(request.message, context=context)
-        return ChatResponse(reply=reply_text, lang=lang, sources=sources)
+        return ChatResponse(type="text", reply=reply_text, lang=lang, sources=sources)
     except AllProvidersFailedError:
         return ChatResponse(
-            reply=_fallback_raw_reply(chunks, lang), lang=lang, sources=sources
+            type="text", reply=_fallback_raw_reply(chunks, lang), lang=lang, sources=sources
         )
