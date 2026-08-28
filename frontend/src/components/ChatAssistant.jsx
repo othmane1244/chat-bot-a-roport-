@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Plane, Paperclip, Send, Bot } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import GlassCard from "./GlassCard";

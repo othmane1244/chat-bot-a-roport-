@@ -2,28 +2,16 @@ import { useEffect, useState } from "react";
 import { getOperationalData } from "../services/operationalService";
 
 export function useOperationalData(flightNumber) {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(() => (flightNumber ? getOperationalData(flightNumber) : null));
 
   useEffect(() => {
-    if (!flightNumber) {
-      setData(null);
-      return;
-    }
-
     const updateData = () => {
-      const operationalData = getOperationalData(flightNumber);
-      setData(operationalData);
+      setData(flightNumber ? getOperationalData(flightNumber) : null);
     };
 
-    updateData();
-
-    const interval = setInterval(
-      updateData,
-      30 * 60 * 1000
-    );
-
+    const interval = setInterval(updateData, 30 * 60 * 1000);
     return () => clearInterval(interval);
   }, [flightNumber]);
 
-  return data;
+  return flightNumber ? (data || getOperationalData(flightNumber)) : null;
 }

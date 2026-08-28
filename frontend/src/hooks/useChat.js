@@ -40,6 +40,7 @@ export function useChat() {
       setMessages((previous) => [...previous, assistantMessage]);
       return response;
     } catch (error) {
+      console.error("Chat error:", error);
       const errorMessage = {
         id: crypto.randomUUID(),
         role: "assistant",

@@ -32,7 +32,6 @@ export default function useAutoScroll(dependencies = []) {
     }
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -41,7 +40,8 @@ export default function useAutoScroll(dependencies = []) {
     } else {
       setHasNewMessages(true);
     }
-  }, [...dependencies]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNearBottom, scrollToBottom, ...dependencies]);
 
   return {
     containerRef,

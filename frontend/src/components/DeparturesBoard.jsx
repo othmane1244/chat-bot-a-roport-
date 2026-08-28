@@ -2,19 +2,12 @@ import { useState, useEffect } from "react";
 import { AVIONIO_CONFIG } from "../config/avionio";
 
 export default function DeparturesBoard() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(() => Boolean(AVIONIO_CONFIG.enabled));
+  const [error, setError] = useState(() => !AVIONIO_CONFIG.enabled);
   const [iframeKey, setIframeKey] = useState(0);
 
   useEffect(() => {
-    if (!AVIONIO_CONFIG.enabled) {
-      setLoading(false);
-      setError(true);
-      return;
-    }
-
-    setLoading(true);
-    setError(false);
+    if (!AVIONIO_CONFIG.enabled) return;
 
     // Timeout de 10 secondes si l'iframe est bloqué ou ne charge pas
     const timeout = setTimeout(() => {
