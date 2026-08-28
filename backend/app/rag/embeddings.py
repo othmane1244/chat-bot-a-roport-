@@ -98,7 +98,13 @@ class BGEM3Embedder:
             raise
 
 
+_embedder_cache: dict[bool, Embedder] = {}
+
+
 def get_embedder(offline_test_mode: bool = False) -> Embedder:
-    if offline_test_mode:
-        return DummyHashEmbedder()
-    return BGEM3Embedder()
+    if offline_test_mode not in _embedder_cache:
+        if offline_test_mode:
+            _embedder_cache[offline_test_mode] = DummyHashEmbedder()
+        else:
+            _embedder_cache[offline_test_mode] = BGEM3Embedder()
+    return _embedder_cache[offline_test_mode]

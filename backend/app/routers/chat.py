@@ -139,18 +139,23 @@ def chat(request: ChatRequest) -> ChatResponse:
     if detected_intent == intent.Intent.OUT_OF_SCOPE:
         return ChatResponse(type="text", reply=intent.out_of_scope_reply(lang), lang=lang, sources=[])
 
-    # DOCUMENTARY
+    # DOCUMENTARY / QUESTIONS
     chunks = query_knowledge(request.message, n_results=3)
-    if not chunks:
-        return ChatResponse(type="text", reply=_no_documentary_result_reply(lang), lang=lang, sources=[])
-
-    sources = [c["metadata"].get("type", "inconnu") for c in chunks]
-    context = _build_rag_context(chunks)
+    sources = [c["metadata"].get("type", "inconnu") for c in chunks] if chunks else []
+    context = _build_rag_context(chunks) if chunks else ""
 
     try:
         reply_text, engine_used = generate_reply(request.message, context=context)
         return ChatResponse(type="text", reply=reply_text, lang=lang, sources=sources)
     except AllProvidersFailedError:
+        if chunks:
+            return ChatResponse(
+                type="text", reply=_fallback_raw_reply(chunks, lang), lang=lang, sources=sources
+            )
         return ChatResponse(
-            type="text", reply=_fallback_raw_reply(chunks, lang), lang=lang, sources=sources
+            type="text",
+            reply="Bonjour ! Je suis l'assistant de l'Aéroport Agadir Al Massira. Comment puis-je vous aider aujourd'hui concernant vos vols, services ou accès à l'aéroport ?",
+            lang=lang,
+            sources=[],
         )
+
