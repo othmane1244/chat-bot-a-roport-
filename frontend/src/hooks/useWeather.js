@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getWeather } from "../services/weatherService";
 import { resolveWeather } from "../utils/weatherResolver";
+import { resolveAtmosphere } from "../utils/atmosphereResolver";
 
 export function useWeather() {
   const [weather, setWeather] = useState(null);
@@ -8,38 +9,30 @@ export function useWeather() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true;
+    let active = true;
 
     async function loadWeather() {
       try {
         setLoading(true);
-        const rawWeather = await getWeather();
-        const resolvedWeather = resolveWeather(
-          rawWeather.weatherCode,
-          rawWeather.isDay
-        );
 
-        if (!isMounted) return;
+        const rawWeather = await getWeather();
+        const weatherInfo = resolveWeather(rawWeather.weatherCode, rawWeather.isDay);
+        const atmosphere = resolveAtmosphere(rawWeather);
+
+        if (!active) return;
 
         setWeather({
           ...rawWeather,
-          ...resolvedWeather,
+          ...weatherInfo,
+          atmosphere,
         });
 
         setError(null);
       } catch (err) {
-        if (!isMounted) return;
+        if (!active) return;
         setError(err);
-        setWeather({
-          temperature: 24,
-          weatherCode: 0,
-          isDay: true,
-          condition: "Sunny",
-          icon: "☀️",
-          atmosphere: "sunny",
-        });
       } finally {
-        if (isMounted) {
+        if (active) {
           setLoading(false);
         }
       }
@@ -47,18 +40,13 @@ export function useWeather() {
 
     loadWeather();
 
-    // Refresh every 15 minutes
     const interval = setInterval(loadWeather, 15 * 60 * 1000);
 
     return () => {
-      isMounted = false;
+      active = false;
       clearInterval(interval);
     };
   }, []);
 
-  return {
-    weather,
-    loading,
-    error,
-  };
+  return { weather, loading, error };
 }

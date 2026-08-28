@@ -7,7 +7,14 @@ export async function getWeather() {
   const params = new URLSearchParams({
     latitude: AGADIR_LATITUDE,
     longitude: AGADIR_LONGITUDE,
-    current: "temperature_2m,weather_code,is_day",
+    current: [
+      "temperature_2m",
+      "relative_humidity_2m",
+      "weather_code",
+      "wind_speed_10m",
+      "visibility",
+      "is_day",
+    ].join(","),
     timezone: "Africa/Casablanca",
   });
 
@@ -22,6 +29,11 @@ export async function getWeather() {
 
   return {
     temperature: Math.round(current.temperature_2m),
+    humidity: current.relative_humidity_2m,
+    windSpeed: Math.round(current.wind_speed_10m),
+    visibility: current.visibility
+      ? Math.round(current.visibility / 1000)
+      : null,
     weatherCode: current.weather_code,
     isDay: Boolean(current.is_day),
   };

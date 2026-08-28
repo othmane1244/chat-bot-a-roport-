@@ -6,6 +6,8 @@ import "./styles/tokens.css";
 import "./styles/global.css";
 import "./styles/components.css";
 import "./styles/animations.css";
+import "./styles/home.css";
+import "./styles/responsive.css";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(

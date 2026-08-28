@@ -1,57 +1,37 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
+import { Plane, Paperclip, Send, Bot } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import GlassCard from "./GlassCard";
+import useAutoScroll from "../hooks/useAutoScroll";
 
-export default function ChatAssistant({
-  messages = [],
-  loading = false,
-  onSend,
-}) {
+export default function ChatAssistant({ messages = [], loading = false, onSend }) {
   const [input, setInput] = useState("");
-  const endRef = useRef(null);
 
-  useEffect(() => {
-    endRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }, [messages, loading]);
+  const { containerRef, handleScroll, scrollToBottom, hasNewMessages } =
+    useAutoScroll([messages, loading]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     if (!input.trim() || loading) return;
-
-    await onSend(input);
-
+    const text = input.trim();
     setInput("");
+    await onSend(text);
   };
 
-  const handleSuggestionClick = async (prompt) => {
-    if (loading) return;
-    await onSend(prompt);
-  };
-
-  const displayMessages = messages.length > 0 ? messages : [
-    {
-      id: "demo-1",
-      role: "user",
-      content: "Where is the baggage claim?",
-      timestamp: "14:32",
-    },
-    {
-      id: "demo-2",
-      role: "assistant",
-      title: "🧳 Baggage Claim",
-      content: "You can find the baggage claim area in the arrivals hall of Terminal 1, after passport control and customs.\n\nFollow the signs \"Baggage Claim\" or ask our staff for assistance.",
-      timestamp: "14:32",
+  const handleSuggestion = (prompt) => {
+    if (!loading) {
+      onSend(prompt);
     }
-  ];
+  };
 
   return (
-    <GlassCard className="dashboard-card col-assistant" id="assistant">
-      <div className="card-header-bar flex-between">
-        <div className="assistant-title flex-items-center gap-2">
-          <div className="assistant-avatar">✈</div>
+    <GlassCard className="chat-assistant-card" id="assistant">
+      {/* HEADER */}
+      <div className="card-header-bar">
+        <div className="assistant-title">
+          <div className="assistant-avatar">
+            <Bot size={18} />
+          </div>
           <div>
             <h3 className="card-title">AI AIRPORT ASSISTANT</h3>
             <span className="online-status">● Online</span>
@@ -59,17 +39,29 @@ export default function ChatAssistant({
         </div>
       </div>
 
-      <div className="messages chat-messages-container">
-        {displayMessages.map((message) => (
-          <ChatMessage
-            key={message.id}
-            message={message}
-          />
-        ))}
+      {/* MESSAGES */}
+      <div
+        ref={containerRef}
+        className="chat-messages-container"
+        onScroll={handleScroll}
+      >
+        {messages.length === 0 ? (
+          <div className="chat-empty-state">
+            <Plane size={38} />
+            <h3>Welcome to AGA Assistant</h3>
+            <p>Ask anything about your journey at Agadir Al Massira Airport.</p>
+          </div>
+        ) : (
+          messages.map((message) => (
+            <ChatMessage key={message.id} message={message} />
+          ))
+        )}
 
         {loading && (
           <div className="typing-wrapper">
-            <div className="assistant-avatar">✈</div>
+            <div className="assistant-avatar">
+              <Bot size={16} />
+            </div>
             <div className="typing-indicator">
               <span />
               <span />
@@ -77,32 +69,46 @@ export default function ChatAssistant({
             </div>
           </div>
         )}
-
-        <div ref={endRef} />
       </div>
 
+      {/* NEW MESSAGES INDICATOR */}
+      {hasNewMessages && (
+        <button
+          type="button"
+          className="scroll-to-bottom-btn"
+          onClick={() => scrollToBottom("smooth")}
+        >
+          ↓ New messages
+        </button>
+      )}
+
+      {/* SUGGESTIONS */}
       <div className="suggestion-pills-row">
-        <button className="sug-pill" onClick={() => handleSuggestionClick("Where is security?")}>
-          Where is security?
+        <button type="button" onClick={() => handleSuggestion("Where is security?")}>
+          Security
         </button>
-        <button className="sug-pill" onClick={() => handleSuggestionClick("Check my flight AT5432")}>
-          Check my flight AT5432
+        <button type="button" onClick={() => handleSuggestion("What is my flight status?")}>
+          Flight status
         </button>
-        <button className="sug-pill" onClick={() => handleSuggestionClick("Parking information")}>
-          Parking information
+        <button type="button" onClick={() => handleSuggestion("Where can I find parking?")}>
+          Parking
         </button>
       </div>
 
-      <form
-        className="chat-bottom-input"
-        onSubmit={handleSubmit}
-      >
-        <button type="button" className="attach-btn" title="Attach file">📎</button>
+      {/* INPUT */}
+      <form className="chat-bottom-input" onSubmit={handleSubmit}>
+        <button
+          type="button"
+          className="attach-btn"
+          aria-label="Attach file"
+          disabled
+        >
+          <Paperclip size={18} />
+        </button>
+
         <input
           value={input}
-          onChange={(event) =>
-            setInput(event.target.value)
-          }
+          onChange={(event) => setInput(event.target.value)}
           placeholder="Ask anything about the airport..."
           disabled={loading}
         />
@@ -110,9 +116,10 @@ export default function ChatAssistant({
         <button
           type="submit"
           className="send-circle-btn"
-          disabled={loading}
+          disabled={loading || !input.trim()}
+          aria-label="Send message"
         >
-          {loading ? "..." : "➤"}
+          <Send size={18} />
         </button>
       </form>
     </GlassCard>

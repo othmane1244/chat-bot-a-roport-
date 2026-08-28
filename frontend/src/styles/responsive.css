@@ -1,0 +1,225 @@
+/* =========================================================
+   TABLET — max 1050px
+========================================================= */
+
+@media (max-width: 1050px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 50px;
+    padding: 100px 0 80px;
+  }
+
+  .hero-section {
+    min-height: auto;
+  }
+
+  .hero-side-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .flight-information-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* =========================================================
+   MOBILE — max 768px
+========================================================= */
+
+@media (max-width: 768px) {
+  .section-container,
+  .header-container,
+  .hero-container {
+    width: calc(100% - 32px);
+  }
+
+  /* HEADER */
+  .desktop-nav,
+  .header-assistant-button {
+    display: none;
+  }
+
+  .mobile-menu-button {
+    display: block;
+  }
+
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 15px 16px 20px;
+    background: rgba(7, 17, 31, 0.97);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .mobile-nav button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    text-align: left;
+    color: white;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  .mobile-nav button:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  /* HERO */
+  .hero-section {
+    min-height: auto;
+  }
+
+  .hero-container {
+    padding: 100px 0 60px;
+  }
+
+  .hero-content h1 {
+    font-size: 48px;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+  }
+
+  .hero-trust {
+    gap: 12px;
+    flex-direction: column;
+  }
+
+  .hero-side-content {
+    grid-template-columns: 1fr;
+  }
+
+  .sky-sun,
+  .sky-moon {
+    width: 55px;
+    height: 55px;
+    right: 10%;
+  }
+
+  /* SECTIONS */
+  .quick-actions-section,
+  .assistant-section,
+  .flights-section,
+  .services-section {
+    padding: 75px 0;
+  }
+
+  /* QUICK ACTIONS */
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* ASSISTANT */
+  .assistant-layout {
+    max-width: 100%;
+  }
+
+  .chat-messages-container {
+    min-height: 320px;
+  }
+
+  /* WEATHER STATS */
+  .airport-weather-stats {
+    grid-template-columns: 1fr;
+  }
+
+  /* AIRPORT TODAY */
+  .airport-today-main {
+    grid-template-columns: 1fr;
+  }
+
+  /* SERVICES */
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* FOOTER */
+  .footer-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE — max 480px
+========================================================= */
+
+@media (max-width: 480px) {
+  .brand-text span {
+    display: none;
+  }
+
+  .hero-content h1 {
+    font-size: 40px;
+  }
+
+  .hero-badge {
+    font-size: 9px;
+  }
+
+  .hero-search {
+    height: 58px;
+    padding-left: 14px;
+  }
+
+  .hero-search-button {
+    width: 42px;
+    height: 42px;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-heading h2,
+  .content-section-heading h2 {
+    font-size: 32px;
+  }
+
+  .sky-plane-wrapper {
+    top: 15%;
+  }
+
+  .flight-information-layout {
+    gap: 16px;
+  }
+
+  .chat-messages-container {
+    min-height: 280px;
+    max-height: 400px;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
